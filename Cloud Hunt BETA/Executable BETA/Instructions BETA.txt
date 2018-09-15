@@ -1,0 +1,39 @@
+
+Touches :
+
+--------------------------------------------------------------------|
+Dans le classement :
+-"Enter"/"Return"/"Space" : jouer
+--------------------------------------------------------------------|
+Dans le jeu :
+-"Enter"/"Return"/"Space" : tirer
+-"W"/"flèche du haut" : monter
+-"S"/"flèche du bas" : descendre
+-"A"/"flèche de gauche" : à gauche
+-"D"/"flèche de droite" : à droite
+-"Shift|Maj" : vitesse divisée par 2
+--------------------------------------------------------------------|
+Sur l'écran de victoire :
+-"Touches" pour écrire le nom
+-"Bakspace" pour effacer
+-"Enter"/"Return"/"Space" : Valide le nom si il a 3 lettres/nombres
+--------------------------------------------------------------------|
+
+Règles :
+
+--------------------------------------------------------------------|
+Eliminer tous les nuages.
+(Le nom d'un joueur contient forcément 2 caractères.)
+--------------------------------------------------------------------|
+
+Score :
+
+--------------------------------------------------------------------|
+1 nuage touché 					  =  05 pts
+1 tir raté     					  = -05 pts
+1 seconde de jeu 				  = -01 pts
+1 nuage touché moins d'une seconde après un autre =  30 pts
+1 nuage touché au même temps qu'un autre 	  =  50 pts
+
+-Le score ne peut pas passer en négatif.
+--------------------------------------------------------------------|
