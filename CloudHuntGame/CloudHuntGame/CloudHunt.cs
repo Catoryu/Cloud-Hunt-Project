@@ -92,29 +92,44 @@ namespace CloudHuntGame
             base.Update(gameTime);
         }
 
+        /// <summary>
+        /// Update player movements.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public void UpdatePlayer(GameTime gameTime)
         {
+            previousMouseState = currentMouseState;
+            currentMouseState = Mouse.GetState();
+
+            //Get Mouse State then Capture the Button type and Respond Button Press
+            Vector2 mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
+            
+            /*if (currentMouseState.LeftButton == ButtonState.Pressed)
+            {
+                player.Position = mousePosition;
+            }*/
+
             // Get Thumbstick Controls
             player.Position.X += currentGamePadState.ThumbSticks.Left.X * player.moveSpeed;
             player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * player.moveSpeed;
 
             // Use the Keyboard / Dpad
-            if (currentKeyboardState.IsKeyDown(Keys.Left) || currentGamePadState.DPad.Left == ButtonState.Pressed)
+            if (currentKeyboardState.IsKeyDown(Keys.A) || currentGamePadState.DPad.Left == ButtonState.Pressed)
             {
                 player.Position.X -= player.moveSpeed;
             }
 
-            if (currentKeyboardState.IsKeyDown(Keys.Right) || currentGamePadState.DPad.Right == ButtonState.Pressed)
+            if (currentKeyboardState.IsKeyDown(Keys.D) || currentGamePadState.DPad.Right == ButtonState.Pressed)
             {
                 player.Position.X += player.moveSpeed;
             }
             
-            if (currentKeyboardState.IsKeyDown(Keys.Up) || currentGamePadState.DPad.Up == ButtonState.Pressed)
+            if (currentKeyboardState.IsKeyDown(Keys.W) || currentGamePadState.DPad.Up == ButtonState.Pressed)
             {
                 player.Position.Y -= player.moveSpeed;
             }
 
-            if (currentKeyboardState.IsKeyDown(Keys.Down) || currentGamePadState.DPad.Down == ButtonState.Pressed)
+            if (currentKeyboardState.IsKeyDown(Keys.S) || currentGamePadState.DPad.Down == ButtonState.Pressed)
             {
                 player.Position.Y += player.moveSpeed;
             }

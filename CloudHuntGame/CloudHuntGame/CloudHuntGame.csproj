@@ -59,7 +59,7 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
-    <Content Include="Content\Graphics\cloud-running.xnb">
+    <Content Include="Content\Graphics\cloud.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Graphics\cursor.xnb">

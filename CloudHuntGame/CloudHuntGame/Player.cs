@@ -20,7 +20,7 @@ namespace Hunt
             Texture = t;
             Position = p;
             Active = true;
-            moveSpeed = 4.0f;
+            moveSpeed = 5.0f;
             //Enable the FreeDrag gesture.
             TouchPanel.EnabledGestures = GestureType.FreeDrag;
         }
