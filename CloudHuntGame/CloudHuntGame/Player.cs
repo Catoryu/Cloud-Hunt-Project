@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input.Touch;
 
 namespace Hunt
 {
@@ -11,12 +13,16 @@ namespace Hunt
         public bool Active;
         public int Width { get { return Texture.Width; } }
         public int Height { get { return Texture.Height; } }
+        public float moveSpeed;
 
         public void Initialize(Texture2D t, Vector2 p)
         {
             Texture = t;
             Position = p;
             Active = true;
+            moveSpeed = 4.0f;
+            //Enable the FreeDrag gesture.
+            TouchPanel.EnabledGestures = GestureType.FreeDrag;
         }
 
         public void Update()

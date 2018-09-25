@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input.Touch;
 using Hunt;
 
 namespace CloudHuntGame
@@ -14,6 +15,15 @@ namespace CloudHuntGame
         SpriteBatch spriteBatch;
 
         Player player;
+        // Keyboard states used to determine key presses
+        KeyboardState currentKeyboardState;
+        KeyboardState previousKeyboardState;
+        // Gamepad states used to determine button presses
+        GamePadState currentGamePadState;
+        GamePadState previousGamePadState;
+        //Mouse states used to track Mouse button press
+        MouseState currentMouseState;
+        MouseState previousMouseState;
 
         public CloudHunt()
         {
@@ -68,9 +78,50 @@ namespace CloudHuntGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            // Save the previous state of the keyboard and game pad so we can determine single key/button presses
+            previousGamePadState = currentGamePadState;
+            previousKeyboardState = currentKeyboardState;
+
+            // Read the current state of the keyboard and gamepad and store it
+            currentKeyboardState = Keyboard.GetState();
+            currentGamePadState = GamePad.GetState(PlayerIndex.One);
+
+            //Update the player
+            UpdatePlayer(gameTime);
 
             base.Update(gameTime);
+        }
+
+        public void UpdatePlayer(GameTime gameTime)
+        {
+            // Get Thumbstick Controls
+            player.Position.X += currentGamePadState.ThumbSticks.Left.X * player.moveSpeed;
+            player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * player.moveSpeed;
+
+            // Use the Keyboard / Dpad
+            if (currentKeyboardState.IsKeyDown(Keys.Left) || currentGamePadState.DPad.Left == ButtonState.Pressed)
+            {
+                player.Position.X -= player.moveSpeed;
+            }
+
+            if (currentKeyboardState.IsKeyDown(Keys.Right) || currentGamePadState.DPad.Right == ButtonState.Pressed)
+            {
+                player.Position.X += player.moveSpeed;
+            }
+            
+            if (currentKeyboardState.IsKeyDown(Keys.Up) || currentGamePadState.DPad.Up == ButtonState.Pressed)
+            {
+                player.Position.Y -= player.moveSpeed;
+            }
+
+            if (currentKeyboardState.IsKeyDown(Keys.Down) || currentGamePadState.DPad.Down == ButtonState.Pressed)
+            {
+                player.Position.Y += player.moveSpeed;
+            }
+
+            // Make sure that the player does not go out of bounds
+            player.Position.X = MathHelper.Clamp(player.Position.X, 0, GraphicsDevice.Viewport.Width - player.Width);
+            player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
         }
 
         /// <summary>
