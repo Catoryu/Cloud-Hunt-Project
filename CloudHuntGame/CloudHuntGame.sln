@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2019
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudHuntGame", "CloudHuntGame\CloudHuntGame.csproj", "{0508CD98-7E56-41A4-BFC7-475872FD061E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Debug|x86.ActiveCfg = Debug|x86
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Debug|x86.Build.0 = Debug|x86
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Release|x86.ActiveCfg = Release|x86
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F4197628-F4DB-40F9-9596-496FC39FC6D4}
+	EndGlobalSection
+EndGlobal
