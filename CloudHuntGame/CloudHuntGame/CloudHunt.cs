@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using Hunt;
+using Animations;
 
 namespace CloudHuntGame
 {
@@ -54,9 +55,14 @@ namespace CloudHuntGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
-            Vector2 PlayerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y);
-            player.Initialize(Content.Load<Texture2D>("Graphics\\cursor"), PlayerPosition);
+            //Load the player resources
+            Animation playerAnimation = new Animation();
+            Texture2D playerTexture = Content.Load<Texture2D>("Graphics\\cursor");
+            playerAnimation.Initialize(playerTexture, Vector2.Zero, 50, 50, 1, 30, Color.White, 1f, true);
+
+            Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,
+                GraphicsDevice.Viewport.TitleSafeArea.Y);
+            player.Initialize(playerAnimation, playerPosition);
         }
 
         /// <summary>
@@ -75,7 +81,8 @@ namespace CloudHuntGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
+                || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             // Save the previous state of the keyboard and game pad so we can determine single key/button presses
@@ -87,6 +94,7 @@ namespace CloudHuntGame
             currentGamePadState = GamePad.GetState(PlayerIndex.One);
 
             //Update the player
+            player.Update(gameTime);
             UpdatePlayer(gameTime);
 
             base.Update(gameTime);
@@ -135,8 +143,8 @@ namespace CloudHuntGame
             }
 
             // Make sure that the player does not go out of bounds
-            player.Position.X = MathHelper.Clamp(player.Position.X, 0, GraphicsDevice.Viewport.Width - player.Width);
-            player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
+            player.Position.X = MathHelper.Clamp(player.Position.X, 0, GraphicsDevice.Viewport.Width);
+            player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height);
         }
 
         /// <summary>
