@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Hunt;
 
 namespace CloudHuntGame
 {
@@ -11,6 +12,8 @@ namespace CloudHuntGame
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        Player player;
 
         public CloudHunt()
         {
@@ -27,6 +30,7 @@ namespace CloudHuntGame
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            player = new Player();
 
             base.Initialize();
         }
@@ -41,6 +45,8 @@ namespace CloudHuntGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            Vector2 PlayerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y);
+            //player.Initialize(Content.Load<Texture2D>("Graphics\\cursor"), PlayerPosition);
         }
 
         /// <summary>
@@ -76,6 +82,9 @@ namespace CloudHuntGame
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            //player.Draw(spriteBatch);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
