@@ -15,6 +15,8 @@ namespace CloudHuntAndroid
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        Player player;
+
         public CloudHunt()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -80,12 +82,12 @@ namespace CloudHuntAndroid
                 Exit();
 
             // Save the previous state of the keyboard and game pad so we can determine single key/button presses
-            previousGamePadState = currentGamePadState;
-            previousKeyboardState = currentKeyboardState;
+            //previousGamePadState = currentGamePadState;
+            //previousKeyboardState = currentKeyboardState;
 
             // Read the current state of the keyboard and gamepad and store it
-            currentKeyboardState = Keyboard.GetState();
-            currentGamePadState = GamePad.GetState(PlayerIndex.One);
+            //currentKeyboardState = Keyboard.GetState();
+            //currentGamePadState = GamePad.GetState(PlayerIndex.One);
 
             //Update the player
             player.Update(gameTime);
@@ -105,7 +107,7 @@ namespace CloudHuntAndroid
             if (touchCollection.Count > 0)
             {
                 //Only Fire Select Once it's been released
-                if (touchCollection[0].State == TouchLocationState.Moved || touchCollection[0].State == TouchLocationState.Pressed)
+                if (touchCollection[0].State == TouchLocationState.Released)
                 {
                     player.Position = touchCollection[0].Position;
                 }

@@ -44,6 +44,10 @@ namespace CloudHuntGame
             player = new Player();
 
             base.Initialize();
+
+            graphics.PreferredBackBufferWidth = 700;  // set this value to the desired width of your window
+            graphics.PreferredBackBufferHeight = 500;   // set this value to the desired height of your window
+            graphics.ApplyChanges();
         }
 
         /// <summary>
