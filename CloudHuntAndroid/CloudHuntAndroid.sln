@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudHuntAndroid", "CloudHuntAndroid\CloudHuntAndroid.csproj", "{5ED492C7-F018-4B9C-BB19-E717444C91AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudHuntGame", "..\CloudHuntGame\CloudHuntGame\CloudHuntGame.csproj", "{0508CD98-7E56-41A4-BFC7-475872FD061E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Debug|x86.Build.0 = Debug|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Release|x86.ActiveCfg = Release|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Release|x86.Build.0 = Release|Any CPU
+		{5ED492C7-F018-4B9C-BB19-E717444C91AF}.Release|x86.Deploy.0 = Release|Any CPU
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Debug|x86.ActiveCfg = Debug|x86
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Debug|x86.Build.0 = Debug|x86
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Release|Any CPU.ActiveCfg = Release|x86
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Release|x86.ActiveCfg = Release|x86
+		{0508CD98-7E56-41A4-BFC7-475872FD061E}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C08DD457-4B94-4F87-BFAC-0703378E1D60}
+	EndGlobalSection
+EndGlobal
