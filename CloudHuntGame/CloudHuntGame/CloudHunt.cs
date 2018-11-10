@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
@@ -16,6 +18,7 @@ namespace CloudHuntGame
         SpriteBatch spriteBatch;
 
         Player player;
+        List<Entity> entities;
         // Keyboard states used to determine key presses
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
@@ -42,6 +45,11 @@ namespace CloudHuntGame
         {
             // TODO: Add your initialization logic here
             player = new Player();
+            entities = new List<Entity>();
+            for (int i = 0; i < 20; i++)
+            {
+                entities.Add(new Entity());
+            }
 
             base.Initialize();
 
@@ -60,13 +68,23 @@ namespace CloudHuntGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //Load the player resources
-            Animation playerAnimation = new Animation();
             Texture2D playerTexture = Content.Load<Texture2D>("Graphics\\cursor");
-            playerAnimation.Initialize(playerTexture, Vector2.Zero, 50, 50, 1, 30, Color.White, 1f, true);
+            Animation playerAnimation = new Animation(playerTexture, Vector2.Zero, 50, 50, 1, 30, Color.White, 1f, true);
 
             Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,
                 GraphicsDevice.Viewport.TitleSafeArea.Y);
             player.Initialize(playerAnimation, playerPosition);
+
+            //Load the entities resources
+            Texture2D cloudTexture = Content.Load<Texture2D>("Graphics\\cloud");
+            Animation cloudAnimation;
+            Random rnd = new Random();
+
+            foreach(Entity val in entities)
+            {
+                cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, (float)rnd.Next(3, 7)/2, true);
+                val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
+            }
         }
 
         /// <summary>
@@ -76,6 +94,7 @@ namespace CloudHuntGame
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            Content.Unload();
         }
 
         /// <summary>
@@ -98,8 +117,15 @@ namespace CloudHuntGame
             currentGamePadState = GamePad.GetState(PlayerIndex.One);
 
             //Update the player
-            player.Update(gameTime);
             UpdatePlayer(gameTime);
+            player.Update(gameTime);
+
+            //Update entities
+            UpdateEntities(gameTime);
+            foreach(Entity val in entities)
+            {
+                val.Update(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -115,40 +141,67 @@ namespace CloudHuntGame
 
             //Get Mouse State then Capture the Button type and Respond Button Press
             Vector2 mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
-            
+
             /*if (currentMouseState.LeftButton == ButtonState.Pressed)
             {
                 player.Position = mousePosition;
             }*/
 
             // Get Thumbstick Controls
-            player.Position.X += currentGamePadState.ThumbSticks.Left.X * player.moveSpeed;
-            player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * player.moveSpeed;
+            player.setPosition(player.Position.X + currentGamePadState.ThumbSticks.Left.X * player.MoveSpeed,
+                player.Position.Y - currentGamePadState.ThumbSticks.Left.Y * player.MoveSpeed);
 
             // Use the Keyboard / Dpad
             if (currentKeyboardState.IsKeyDown(Keys.A) || currentGamePadState.DPad.Left == ButtonState.Pressed)
             {
-                player.Position.X -= player.moveSpeed;
+                player.setPosition(player.Position.X - player.MoveSpeed, player.Position.Y);
             }
 
             if (currentKeyboardState.IsKeyDown(Keys.D) || currentGamePadState.DPad.Right == ButtonState.Pressed)
             {
-                player.Position.X += player.moveSpeed;
+                player.setPosition(player.Position.X + player.MoveSpeed, player.Position.Y);
             }
-            
+
             if (currentKeyboardState.IsKeyDown(Keys.W) || currentGamePadState.DPad.Up == ButtonState.Pressed)
             {
-                player.Position.Y -= player.moveSpeed;
+                player.setPosition(player.Position.X, player.Position.Y - player.MoveSpeed);
             }
 
             if (currentKeyboardState.IsKeyDown(Keys.S) || currentGamePadState.DPad.Down == ButtonState.Pressed)
             {
-                player.Position.Y += player.moveSpeed;
+                player.setPosition(player.Position.X, player.Position.Y + player.MoveSpeed);
             }
 
             // Make sure that the player does not go out of bounds
-            player.Position.X = MathHelper.Clamp(player.Position.X, 0, GraphicsDevice.Viewport.Width);
-            player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height);
+            player.setPosition(MathHelper.Clamp(player.Position.X, 0, 500),
+                MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height));
+        }
+
+        /// <summary>
+        /// Update entities movements.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        public void UpdateEntities(GameTime gameTime)
+        {
+            foreach(Entity value in entities)
+            {
+                if (value.Direction)
+                {
+                    value.setPosition(value.Position.X + value.MoveSpeed, value.Position.Y);
+                    if (value.Position.X > 500 + value.Width)
+                    {
+                        value.setPosition(0 - value.Width, value.Position.Y);
+                    }
+                }
+                else
+                {
+                    value.setPosition(value.Position.X - value.MoveSpeed, value.Position.Y);
+                    if (value.Position.X < 0 - value.Width)
+                    {
+                        value.setPosition(500 + value.Width, value.Position.Y);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -161,6 +214,10 @@ namespace CloudHuntGame
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
+            foreach(Entity val in entities)
+            {
+                val.Draw(spriteBatch);
+            }
             player.Draw(spriteBatch);
             spriteBatch.End();
 

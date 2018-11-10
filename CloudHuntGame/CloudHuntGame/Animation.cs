@@ -26,81 +26,85 @@ namespace Animations
         // The area where we want to display the image strip in the game
         Rectangle destinationRect = new Rectangle();
         // Width of a given frame
-        public int FrameWidth;
+        private int frameWidth;
+        public int FrameWidth { get { return (int)(frameWidth * scale); } }
         // Height of a given frame
-        public int FrameHeight;
+        private int frameHeight;
+        public int FrameHeight { get { return (int)(frameHeight * scale); } }
         // The state of the Animation
-        public bool Active;
+        private bool active;
+        public bool Active { get { return active; } set { active = value; } }
         // Determines if the animation will keep playing or deactivate after one run
-        public bool Looping;
+        private bool looping;
+        public bool Looping { get { return looping; } }
         // Width of a given frame
-        public Vector2 Position;
+        private Vector2 position;
+        public Vector2 Position { get { return position; } set { position = value; } }
 
-        public void Initialize(Texture2D texture, Vector2 position, int frameWidth,
+        public Animation(Texture2D Texture, Vector2 Position, int frameWidth,
             int frameHeight, int frameCount, int frametime,
-            Color color, float scale, bool looping)
+            Color color, float scale, bool Looping)
         {
             // Keep a local copy of the values passed in
             this.color = color;
-            this.FrameWidth = frameWidth;
-            this.FrameHeight = frameHeight;
+            this.frameWidth = frameWidth;
+            this.frameHeight = frameHeight;
             this.frameCount = frameCount;
             this.frameTime = frametime;
             this.scale = scale;
 
-            Looping = looping;
-            Position = position;
-            spriteStrip = texture;
+            this.looping = Looping;
+            this.position = Position;
+            this.spriteStrip = Texture;
 
             // Set the time to zero
-            elapsedTime = 0;
-            currentFrame = 0;
+            this.elapsedTime = 0;
+            this.currentFrame = 0;
 
             // Set the Animation to active by default
-            Active = true;
+            this.active = true;
         }
 
         public void Update(GameTime gameTime)
         {
             // Do not update the game if we are not active
-            if (Active == false) return;
+            if (!this.active) return;
             // Update the elapsed time
-            elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+            this.elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
             // If the elapsed time is larger than the frame time we need to switch frames
-            if (elapsedTime > frameTime)
+            if (this.elapsedTime > this.frameTime)
             {
                 // Move to the next frame
-                currentFrame++;
+                this.currentFrame++;
 
                 // If the currentFrame is equal to frameCount reset currentFrame to zero
-                if (currentFrame == frameCount)
+                if (this.currentFrame == this.frameCount)
                 {
-                    currentFrame = 0;
+                    this.currentFrame = 0;
                     // If we are not looping deactivate the animation
-                    if (Looping == false)
-                        Active = false;
+                    if (!this.looping) this.active = false;
                 }
 
                 // Reset the elapsed time to zero
-                elapsedTime = 0;
+                this.elapsedTime = 0;
             }
 
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the Frame width
-            sourceRect = new Rectangle(currentFrame * FrameWidth, 0, FrameWidth, FrameHeight);
+            this.sourceRect = new Rectangle(this.currentFrame * this.frameWidth, 0, this.frameWidth, this.frameHeight);
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
-            destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * scale) / 2,
-            (int)Position.Y - (int)(FrameHeight * scale) / 2,
-            (int)(FrameWidth * scale),
-            (int)(FrameHeight * scale));
+            this.destinationRect = new Rectangle((int)this.position.X - (int)(this.frameWidth * this.scale) / 2,
+            (int)this.position.Y - (int)(this.frameHeight * this.scale) / 2,
+            (int)(this.frameWidth * this.scale),
+            (int)(this.frameHeight * this.scale));
         }
 
         // Draw the Animation Strip
         public void Draw(SpriteBatch spriteBatch)
         {
             // Only draw the animation when we are active
-            if (Active)
+            if (this.active)
             {
-                spriteBatch.Draw(spriteStrip, destinationRect, sourceRect, color);
+                spriteBatch.Draw(this.spriteStrip, this.destinationRect, this.sourceRect, this.color);
             }
         }
     }

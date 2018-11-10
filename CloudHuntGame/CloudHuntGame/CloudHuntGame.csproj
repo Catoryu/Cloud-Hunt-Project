@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Animation.cs" />
     <Compile Include="CloudHunt.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
