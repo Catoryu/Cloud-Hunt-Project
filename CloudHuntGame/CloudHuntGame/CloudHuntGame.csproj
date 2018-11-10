@@ -67,6 +67,7 @@
     <Content Include="Content\Graphics\cursor.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Font\Consola.xnb" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Sound\" />

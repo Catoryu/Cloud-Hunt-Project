@@ -16,7 +16,16 @@ namespace CloudHuntGame
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont _font;
 
+        //Timer
+        int frame;
+
+        //Game states
+        enum _gameState { Loading, Menu, Options, Playing, Exit };
+        Stack<_gameState> gameState = new Stack<_gameState>();
+
+        //Entities
         Player player;
         List<Entity> entities;
         // Keyboard states used to determine key presses
@@ -66,6 +75,7 @@ namespace CloudHuntGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            _font = Content.Load<SpriteFont>("Font\\Consola");
 
             //Load the player resources
             Texture2D playerTexture = Content.Load<Texture2D>("Graphics\\cursor");
@@ -85,6 +95,9 @@ namespace CloudHuntGame
                 cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, (float)rnd.Next(3, 7)/2, true);
                 val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
             }
+
+            //Initial Game State
+            gameState.Push(_gameState.Loading);
         }
 
         /// <summary>
@@ -104,10 +117,6 @@ namespace CloudHuntGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
-                || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             // Save the previous state of the keyboard and game pad so we can determine single key/button presses
             previousGamePadState = currentGamePadState;
             previousKeyboardState = currentKeyboardState;
@@ -116,18 +125,70 @@ namespace CloudHuntGame
             currentKeyboardState = Keyboard.GetState();
             currentGamePadState = GamePad.GetState(PlayerIndex.One);
 
-            //Update the player
-            UpdatePlayer(gameTime);
-            player.Update(gameTime);
-
-            //Update entities
-            UpdateEntities(gameTime);
-            foreach(Entity val in entities)
+            switch(gameState.Peek())
             {
-                val.Update(gameTime);
-            }
+                case _gameState.Loading:
+                    if (frame > 180)
+                    {
+                        gameState.Pop();
+                        gameState.Push(_gameState.Menu);
+                        frame = 0;
+                    }
+                    break;
+                case _gameState.Menu:
+                    if (frame > 30)
+                    {
+                        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
+                        || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                        {
+                            gameState.Pop();
+                            gameState.Push(_gameState.Exit);
+                            frame = 0;
+                        }
+                        else if (GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed
+                            || Keyboard.GetState().IsKeyDown(Keys.Enter))
+                        {
+                            gameState.Push(_gameState.Playing);
+                            frame = 0;
+                        }
+                    }
+                    break;
+                case _gameState.Playing:
+                    //Update the player
+                    UpdatePlayer(gameTime);
+                    player.Update(gameTime);
 
+                    //Update entities
+                    UpdateEntities(gameTime);
+                    foreach (Entity val in entities)
+                    {
+                        val.Update(gameTime);
+                    }
+
+                    //Exit
+                    if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
+                        || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    {
+                        gameState.Pop();
+                        frame = 0;
+                    }
+                    break;
+                case _gameState.Options:
+
+                    break;
+                case _gameState.Exit:
+                    if (frame > 180)
+                    {
+                        gameState.Pop();
+                        Exit();
+                    }
+                    break;
+                default:
+                    gameState.Push(_gameState.Loading);
+                    break;
+            }
             base.Update(gameTime);
+            frame++;
         }
 
         /// <summary>
@@ -214,11 +275,32 @@ namespace CloudHuntGame
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            foreach(Entity val in entities)
+            switch(gameState.Peek())
             {
-                val.Draw(spriteBatch);
+                case _gameState.Loading:
+                    spriteBatch.DrawString(_font, "Loading...", Vector2.Zero, Color.DarkBlue);
+                    break;
+                case _gameState.Menu:
+                    spriteBatch.DrawString(_font, "Menu", Vector2.Zero, Color.DarkBlue);
+                    break;
+                case _gameState.Playing:
+                    foreach (Entity val in entities)
+                    {
+                        val.Draw(spriteBatch);
+                    }
+                    player.Draw(spriteBatch);
+
+                    break;
+                case _gameState.Options:
+
+                    break;
+                case _gameState.Exit:
+                    spriteBatch.DrawString(_font, "Exit", Vector2.Zero, Color.DarkBlue);
+                    break;
+                default:
+                    gameState.Push(_gameState.Loading);
+                    break;
             }
-            player.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);
