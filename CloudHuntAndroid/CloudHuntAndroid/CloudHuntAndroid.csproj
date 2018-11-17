@@ -31,8 +31,12 @@
     <DefineConstants>DEBUG;TRACE;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <BundleAssemblies>false</BundleAssemblies>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,6 +47,9 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <BundleAssemblies>false</BundleAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -60,6 +67,7 @@
     <Compile Include="Activity1.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="CloudHunt.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -71,6 +79,14 @@
     <AndroidAsset Include="Content\Graphics\cursor.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AndroidAsset>
+    <AndroidAsset Include="Content\Graphics\baloon.xnb" />
+    <AndroidAsset Include="Content\Graphics\hover-button.xnb" />
+    <AndroidAsset Include="Content\Graphics\icon.xnb" />
+    <AndroidAsset Include="Content\Graphics\panel.xnb" />
+    <AndroidAsset Include="Content\Graphics\simple-button.xnb" />
+    <AndroidAsset Include="Content\Graphics\sky-background.xnb" />
+    <AndroidAsset Include="Content\Graphics\write-screen.xnb" />
+    <AndroidAsset Include="Content\Consola.xnb" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>

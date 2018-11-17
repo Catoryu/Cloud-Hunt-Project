@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using Animations;
-using CloudHuntGame;
+using CloudHuntAndroid;
 
 namespace Hunt
 {
@@ -51,7 +51,7 @@ namespace Hunt
             this.position.Y = y;
         }
 
-        public virtual int getShooted(int score)
+        public virtual int getShooted(int score, CloudHunt game)
         {
             this.active = false;
             return score;
@@ -69,12 +69,12 @@ namespace Hunt
             this.direction = (bool)specialParameter;
         }
 
-        public override int getShooted(int score)
+        public override int getShooted(int score, CloudHunt game)
         {
-            score = base.getShooted(score);
+            score = base.getShooted(score, game);
             //Augmentation de points
             score += 5;
-            if (Program.game.killBonus)
+            if (game.killBonus)
             {
                 score += 15;
             }
@@ -100,10 +100,10 @@ namespace Hunt
             this.color = (BaloonColor)specialParameter;
         }
 
-        public override int getShooted(int score)
+        public override int getShooted(int score, CloudHunt game)
         {
-            score = base.getShooted(score);
-            switch(this.color)
+            score = base.getShooted(score, game);
+            switch (this.color)
             {
                 case BaloonColor.blue:
                     //Gagne grande quantité de points
@@ -111,15 +111,15 @@ namespace Hunt
                     break;
                 case BaloonColor.green:
                     //Prochains kills x5 points
-                    Program.game.killBonus = true;
+                    game.killBonus = true;
                     break;
                 case BaloonColor.red:
                     //Tir de zone
-                    Program.game.zoneShot = true;
+                    game.zoneShot = true;
                     break;
                 case BaloonColor.yellow:
                     //Clean à points divisés par 2
-                    Program.game.instaKill = true;
+                    game.instaKill = true;
                     break;
             }
             return score;

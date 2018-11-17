@@ -11,10 +11,13 @@ namespace CloudHuntGame
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+
+        public static CloudHunt game = new CloudHunt();
+
         [STAThread]
         static void Main()
         {
-            using (var game = new CloudHunt())
+            using (game)
                 game.Run();
         }
     }

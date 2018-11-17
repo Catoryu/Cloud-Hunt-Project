@@ -10,32 +10,47 @@ namespace Hunt
     class Player
     {
         //public Texture2D PlayerTexture;
-        public Animation Texture;
-        public Vector2 Position;
-        public bool Active;
-        public int Width { get { return Texture.FrameWidth; } }
-        public int Height { get { return Texture.FrameHeight; } }
-        public float moveSpeed;
+        private Animation texture;
+        private Vector2 position;
+        public Vector2 Position { get { return position; } }
+        private bool active;
+        public bool Active { get { return active; } set { active = value; } }
+        public int Width { get { return texture.FrameWidth; } }
+        public int Height { get { return texture.FrameHeight; } }
+        private float moveSpeed;
+        public float MoveSpeed { get { return moveSpeed; } }
 
-        public void Initialize(Animation a, Vector2 p)
+        public void Initialize(Animation Texture, Vector2 Position)
         {
-            Texture = a;
-            Position = p;
-            Active = true;
-            moveSpeed = 5.0f;
+            this.texture = Texture;
+            this.position = Position;
+            this.active = true;
+            this.moveSpeed = 5.0f;
             //Enable the FreeDrag gesture.
             TouchPanel.EnabledGestures = GestureType.FreeDrag;
         }
 
         public void Update(GameTime gameTime)
         {
-            Texture.Position = Position;
-            Texture.Update(gameTime);
+            if (this.active)
+            {
+                this.texture.Position = Position;
+                this.texture.Update(gameTime);
+            }
         }
 
         public void Draw(SpriteBatch sb)
         {
-            Texture.Draw(sb);
+            if (this.active)
+            {
+                this.texture.Draw(sb);
+            }
+        }
+
+        public void setPosition(float x, float y)
+        {
+            this.position.X = x;
+            this.position.Y = y;
         }
     }
 }
