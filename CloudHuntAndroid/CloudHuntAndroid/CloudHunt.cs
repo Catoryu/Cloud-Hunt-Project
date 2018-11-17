@@ -43,12 +43,14 @@ namespace CloudHuntAndroid
         Animation yellowBaloonAnimation;
         Animation background;
         Texture2D panel;
+        Vector2 panelPosition;
         Animation icon;
 
         //Other
         Cloud TypeCloud = new Cloud();
         Baloon TypeBaloon = new Baloon();
         Random rnd;
+        float virtualScale;
 
         bool shot = false;
 
@@ -61,6 +63,7 @@ namespace CloudHuntAndroid
             graphics.PreferredBackBufferWidth = 500;
             graphics.PreferredBackBufferHeight = 700;
             graphics.SupportedOrientations = DisplayOrientation.Portrait;
+            graphics.ApplyChanges();
         }
 
         /// <summary>
@@ -97,16 +100,20 @@ namespace CloudHuntAndroid
         /// </summary>
         protected override void LoadContent()
         {
+            //Virtual scale
+            virtualScale = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / graphics.PreferredBackBufferWidth;
+
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            _font = Content.Load<SpriteFont>("Font\\Consola");
-            background = new Animation(Content.Load<Texture2D>("Graphics\\sky-background"), new Vector2(250, 250), 100, 100, 1, 30, Color.White, 5f, true);
+            _font = Content.Load<SpriteFont>("Consola");
+            background = new Animation(Content.Load<Texture2D>("Graphics\\sky-background"), new Vector2(250 * virtualScale, 250 * virtualScale), 100, 100, 1, 30, Color.White, 5f * virtualScale, true);
             panel = Content.Load<Texture2D>("Graphics\\panel");
-            icon = new Animation(Content.Load<Texture2D>("Graphics\\icon"), new Vector2(100, 100), 50, 50, 1, 30, Color.White, 1f, true);
+            panelPosition = new Vector2(0, 500 * virtualScale);
+            icon = new Animation(Content.Load<Texture2D>("Graphics\\icon"), new Vector2(100 * virtualScale, 100 * virtualScale), 50, 50, 1, 30, Color.White, virtualScale, true);
 
             //Load the player resources
             Texture2D playerTexture = Content.Load<Texture2D>("Graphics\\cursor");
-            Animation playerAnimation = new Animation(playerTexture, Vector2.Zero, 50, 50, 1, 30, Color.White, 1f, true);
+            Animation playerAnimation = new Animation(playerTexture, Vector2.Zero, 50, 50, 1, 30, Color.White, virtualScale, true);
 
             Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,
                 GraphicsDevice.Viewport.TitleSafeArea.Y);
@@ -119,24 +126,24 @@ namespace CloudHuntAndroid
 
             foreach (Entity val in entities)
             {
-                cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, (float)rnd.Next(3, 7) / 2, true);
-                val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
+                cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, ((float)rnd.Next(3, 7) / 2) * virtualScale, true);
+                val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), rnd.Next(0, (int)(500 * virtualScale))), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
             }
             foreach (Entity val in menuEntities)
             {
                 if (val.GetType() == TypeCloud.GetType())
                 {
-                    cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, (float)rnd.Next(3, 7) / 2, true);
-                    val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
+                    cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, ((float)rnd.Next(3, 7) / 2) * virtualScale, true);
+                    val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), rnd.Next(0, (int)(500 * virtualScale))), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
                 }
             }
 
             //Load baloons resources
             Texture2D baloonTexture = Content.Load<Texture2D>("Graphics\\baloon");
-            redBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Red, 1f, true);
-            blueBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Blue, 1f, true);
-            greenBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Green, 1f, true);
-            yellowBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Yellow, 1f, true);
+            redBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Red, virtualScale, true);
+            blueBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Blue, virtualScale, true);
+            greenBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Green, virtualScale, true);
+            yellowBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Yellow, virtualScale, true);
 
             foreach (Entity val in menuEntities)
             {
@@ -145,16 +152,16 @@ namespace CloudHuntAndroid
                     switch (rnd.Next(0, 4))
                     {
                         case 0:
-                            val.Initialize(redBaloonAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), 1f, Baloon.BaloonColor.red);
+                            val.Initialize(redBaloonAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), rnd.Next(0, (int)(500 * virtualScale))), 1f, Baloon.BaloonColor.red);
                             break;
                         case 1:
-                            val.Initialize(blueBaloonAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), 1f, Baloon.BaloonColor.blue);
+                            val.Initialize(blueBaloonAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), rnd.Next(0, (int)(500 * virtualScale))), 1f, Baloon.BaloonColor.blue);
                             break;
                         case 2:
-                            val.Initialize(greenBaloonAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), 1f, Baloon.BaloonColor.green);
+                            val.Initialize(greenBaloonAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), rnd.Next(0, (int)(500 * virtualScale))), 1f, Baloon.BaloonColor.green);
                             break;
                         case 3:
-                            val.Initialize(yellowBaloonAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), 1f, Baloon.BaloonColor.yellow);
+                            val.Initialize(yellowBaloonAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), rnd.Next(0, (int)(500 * virtualScale))), 1f, Baloon.BaloonColor.yellow);
                             break;
                         default:
                             break;
@@ -210,7 +217,7 @@ namespace CloudHuntAndroid
                             gameState.Push(_gameState.Exit);
                             frame = 0;
                         }
-                        else if (touchCollection[0].State == TouchLocationState.Moved)
+                        else if (touchCollection.Count > 0) if (touchCollection[0].State == TouchLocationState.Moved)
                         {
                             gameState.Push(_gameState.Playing);
                             frame = 0;
@@ -236,16 +243,16 @@ namespace CloudHuntAndroid
                         switch (rnd.Next(0, 4))
                         {
                             case 0:
-                                BaloonBonus.Initialize(redBaloonAnimation, new Vector2(rnd.Next(0, 500), 500 + redBaloonAnimation.FrameHeight), 4f, Baloon.BaloonColor.red);
+                                BaloonBonus.Initialize(redBaloonAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), (500 + redBaloonAnimation.FrameHeight) * virtualScale), 4f, Baloon.BaloonColor.red);
                                 break;
                             case 1:
-                                BaloonBonus.Initialize(blueBaloonAnimation, new Vector2(rnd.Next(0, 500), 500 + blueBaloonAnimation.FrameHeight), 4f, Baloon.BaloonColor.blue);
+                                BaloonBonus.Initialize(blueBaloonAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), (500 + blueBaloonAnimation.FrameHeight) * virtualScale), 4f, Baloon.BaloonColor.blue);
                                 break;
                             case 2:
-                                BaloonBonus.Initialize(greenBaloonAnimation, new Vector2(rnd.Next(0, 500), 500 + greenBaloonAnimation.FrameHeight), 4f, Baloon.BaloonColor.green);
+                                BaloonBonus.Initialize(greenBaloonAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), (500 + greenBaloonAnimation.FrameHeight) * virtualScale), 4f, Baloon.BaloonColor.green);
                                 break;
                             case 3:
-                                BaloonBonus.Initialize(yellowBaloonAnimation, new Vector2(rnd.Next(0, 500), 500 + yellowBaloonAnimation.FrameHeight), 4f, Baloon.BaloonColor.yellow);
+                                BaloonBonus.Initialize(yellowBaloonAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), (500 + yellowBaloonAnimation.FrameHeight) * virtualScale), 4f, Baloon.BaloonColor.yellow);
                                 break;
                             default:
                                 break;
@@ -297,7 +304,7 @@ namespace CloudHuntAndroid
             if (touchCollection.Count > 0)
             {
                 //Only Fire Select Once it's been released
-                if (touchCollection[0].State == TouchLocationState.Released)
+                if (touchCollection[0].State == TouchLocationState.Moved)
                 {
                     player.setPosition(touchCollection[0].Position.X, touchCollection[0].Position.Y);
                 }
@@ -340,8 +347,8 @@ namespace CloudHuntAndroid
             }
             */
             // Make sure that the player does not go out of bounds
-            player.setPosition(MathHelper.Clamp(player.Position.X, 0, 500),
-                MathHelper.Clamp(player.Position.Y, 0, 500));
+            player.setPosition(MathHelper.Clamp(player.Position.X, 0, 500 * virtualScale),
+                MathHelper.Clamp(player.Position.Y, 0, 500 * virtualScale));
         }
 
         /// <summary>
@@ -356,25 +363,25 @@ namespace CloudHuntAndroid
                 {
                     if (((Cloud)value).Direction)
                     {
-                        value.setPosition(value.Position.X + value.MoveSpeed, value.Position.Y);
-                        if (value.Position.X > 500 + value.Width)
+                        value.setPosition(value.Position.X + value.MoveSpeed * virtualScale, value.Position.Y);
+                        if (value.Position.X > (500 + value.Width) * virtualScale)
                         {
-                            value.setPosition(0 - value.Width, value.Position.Y);
+                            value.setPosition(0 - value.Width * virtualScale, value.Position.Y);
                         }
                     }
                     else
                     {
-                        value.setPosition(value.Position.X - value.MoveSpeed, value.Position.Y);
-                        if (value.Position.X < 0 - value.Width)
+                        value.setPosition(value.Position.X - value.MoveSpeed * virtualScale, value.Position.Y);
+                        if (value.Position.X < 0 - value.Width * virtualScale)
                         {
-                            value.setPosition(500 + value.Width, value.Position.Y);
+                            value.setPosition((500 + value.Width) * virtualScale, value.Position.Y);
                         }
                     }
                 }
                 if (value.GetType() == TypeBaloon.GetType())
                 {
-                    value.setPosition(value.Position.X, value.Position.Y - value.MoveSpeed);
-                    if (value.Position.Y < 0 - value.Height)
+                    value.setPosition(value.Position.X, value.Position.Y - value.MoveSpeed * virtualScale);
+                    if (value.Position.Y < 0 - value.Height * virtualScale)
                     {
                         value.Active = false;
                     }
@@ -394,27 +401,27 @@ namespace CloudHuntAndroid
                 {
                     if (((Cloud)value).Direction)
                     {
-                        value.setPosition(value.Position.X + value.MoveSpeed, value.Position.Y);
-                        if (value.Position.X > 500 + value.Width)
+                        value.setPosition(value.Position.X + value.MoveSpeed * virtualScale, value.Position.Y);
+                        if (value.Position.X > (500 + value.Width) * virtualScale)
                         {
-                            value.setPosition(0 - value.Width, value.Position.Y);
+                            value.setPosition(0 - value.Width * virtualScale, value.Position.Y);
                         }
                     }
                     else
                     {
-                        value.setPosition(value.Position.X - value.MoveSpeed, value.Position.Y);
-                        if (value.Position.X < 0 - value.Width)
+                        value.setPosition(value.Position.X - value.MoveSpeed * virtualScale, value.Position.Y);
+                        if (value.Position.X < 0 - value.Width * virtualScale)
                         {
-                            value.setPosition(500 + value.Width, value.Position.Y);
+                            value.setPosition((500 + value.Width) * virtualScale, value.Position.Y);
                         }
                     }
                 }
                 if (value.GetType() == TypeBaloon.GetType())
                 {
-                    value.setPosition(value.Position.X, value.Position.Y - value.MoveSpeed);
-                    if (value.Position.Y < 0 - value.Height)
+                    value.setPosition(value.Position.X, value.Position.Y - value.MoveSpeed * virtualScale);
+                    if (value.Position.Y < 0 - value.Height * virtualScale)
                     {
-                        value.setPosition(value.Position.X, 500 + value.Height);
+                        value.setPosition(value.Position.X, (500 + value.Height) * virtualScale);
                     }
                 }
             }
@@ -423,22 +430,27 @@ namespace CloudHuntAndroid
         public void UpdateShoots(GameTime gameTime)
         {
             TouchCollection touchCollection = TouchPanel.GetState();
-            if (touchCollection[0].State == TouchLocationState.Moved)
+            if (touchCollection.Count > 0)
             {
-                shot = true;
+                if (touchCollection[0].State == TouchLocationState.Moved)
+                {
+                    shot = true;
+                }
             }
             if (shot)
             {
                 foreach (Entity value in entities)
                 {
-                    if (value.Position.X - (value.Width / 2) < player.Position.X && player.Position.X < value.Position.X + (value.Width / 2)
-                    && value.Position.Y - (value.Height / 2) < player.Position.Y && player.Position.Y < value.Position.Y + (value.Height / 2)
-                    && (touchCollection[0].State == TouchLocationState.Released && shot))
+                    if (value.Position.X - (value.Width / 2) * virtualScale < player.Position.X 
+                        && player.Position.X < value.Position.X + (value.Width / 2) * virtualScale
+                    && value.Position.Y - (value.Height / 2) * virtualScale < player.Position.Y 
+                    && player.Position.Y < value.Position.Y + (value.Height / 2) * virtualScale
+                    && (touchCollection.Count == 0 && shot))
                     {
                         score = value.getShooted(score, this);
                     }
                 }
-                if (touchCollection[0].State == TouchLocationState.Released)
+                if (touchCollection.Count == 0)
                 {
                     shot = false;
                 }
@@ -451,7 +463,7 @@ namespace CloudHuntAndroid
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
@@ -459,17 +471,17 @@ namespace CloudHuntAndroid
             switch (gameState.Peek())
             {
                 case _gameState.Loading:
-                    spriteBatch.Draw(panel, new Vector2(250, 600), null, Color.White, 0.25f, new Vector2(250, 600), 1f, SpriteEffects.None, 0f);
-                    spriteBatch.DrawString(_font, "Loading...", Vector2.Zero, Color.DarkBlue);
+                    spriteBatch.Draw(panel, panelPosition, null, Color.White, (float)(Math.PI * 0.5f), new Vector2(0, 500), 1f * virtualScale, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(_font, "Loading...", Vector2.Zero, Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
                     break;
                 case _gameState.Menu:
                     foreach (Entity val in menuEntities)
                     {
                         val.Draw(spriteBatch);
                     }
-                    spriteBatch.Draw(panel, new Vector2(250, 600), null, Color.White, 0.25f, new Vector2(250, 600), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(panel, panelPosition, null, Color.White, (float)(Math.PI * 0.5f), new Vector2(0, 500), 1f * virtualScale, SpriteEffects.None, 0f);
                     icon.Draw(spriteBatch);
-                    spriteBatch.DrawString(_font, "Cloud Hunt", new Vector2(150, 80), Color.DarkBlue, 0f, Vector2.Zero, 3f, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(_font, "Cloud Hunt", new Vector2(150 * virtualScale, 80 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, 3f * virtualScale, SpriteEffects.None, 0f);
                     break;
                 case _gameState.Playing:
                     foreach (Entity val in entities)
@@ -477,20 +489,19 @@ namespace CloudHuntAndroid
                         val.Draw(spriteBatch);
                     }
                     player.Draw(spriteBatch);
-                    spriteBatch.Draw(panel, new Vector2(250, 600), null, Color.White, 0.25f, new Vector2(250, 600), 1f, SpriteEffects.None, 0f);
-                    spriteBatch.DrawString(_font, "Time : " + frame / 60, new Vector2(35, 535), Color.DarkBlue);
-                    spriteBatch.DrawString(_font, "Score: " + score, new Vector2(35, 550), Color.DarkBlue);
+                    spriteBatch.Draw(panel, panelPosition, null, Color.White, (float)(Math.PI * 0.5f), new Vector2(0, 500), 1f * virtualScale, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(_font, "Time : " + frame / 60, new Vector2(35 * virtualScale, 535 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(_font, "Score: " + score, new Vector2(35 * virtualScale, 550 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
 
                     break;
                 case _gameState.Options:
-                    spriteBatch.Draw(panel, new Vector2(250, 600), null, Color.White, 0.25f, new Vector2(250, 600), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(panel, panelPosition, null, Color.White, (float)(Math.PI * 0.5f), new Vector2(0, 500), 1f * virtualScale, SpriteEffects.None, 0f);
                     break;
                 case _gameState.Exit:
-                    spriteBatch.Draw(panel, new Vector2(250, 600), null, Color.White, 0.25f, new Vector2(250, 600), 1f, SpriteEffects.None, 0f);
-                    spriteBatch.DrawString(_font, "Good bye", new Vector2(150, 230), Color.DarkBlue, 0f, Vector2.Zero, 3f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(panel, panelPosition, null, Color.White, (float)(Math.PI * 0.5f), new Vector2(0, 500), 1f * virtualScale, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(_font, "Good bye", new Vector2(150 * virtualScale, 230 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, 3f * virtualScale, SpriteEffects.None, 0f);
                     break;
                 default:
-                    gameState.Push(_gameState.Loading);
                     break;
             }
             spriteBatch.End();
