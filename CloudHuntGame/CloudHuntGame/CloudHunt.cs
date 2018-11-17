@@ -28,6 +28,11 @@ namespace CloudHuntGame
         //Entities
         Player player;
         List<Entity> entities;
+        List<Entity> menuEntities;//Entities for menuAnimation
+        Baloon BaloonBonus;
+        Animation background;
+        Animation panel;
+        Animation icon;
         // Keyboard states used to determine key presses
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
@@ -37,6 +42,10 @@ namespace CloudHuntGame
         //Mouse states used to track Mouse button press
         MouseState currentMouseState;
         MouseState previousMouseState;
+
+        //Other
+        Cloud TypeCloud = new Cloud();
+        Baloon TypeBaloon = new Baloon();
 
         public CloudHunt()
         {
@@ -57,7 +66,16 @@ namespace CloudHuntGame
             entities = new List<Entity>();
             for (int i = 0; i < 20; i++)
             {
-                entities.Add(new Entity());
+                entities.Add(new Cloud());
+            }
+            menuEntities = new List<Entity>();
+            for (int i = 0; i < 5; i++)
+            {
+                menuEntities.Add(new Cloud());
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                menuEntities.Add(new Baloon());
             }
 
             base.Initialize();
@@ -76,6 +94,9 @@ namespace CloudHuntGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             _font = Content.Load<SpriteFont>("Font\\Consola");
+            background = new Animation(Content.Load<Texture2D>("Graphics\\sky-background"), new Vector2(250, 250), 100, 100, 1, 30, Color.White, 5f, true);
+            panel = new Animation(Content.Load<Texture2D>("Graphics\\panel"), new Vector2(600, 250), 200, 500, 1, 30, Color.White, 1f, true);
+            icon = new Animation(Content.Load<Texture2D>("Graphics\\icon"), new Vector2(100, 100), 50, 50, 1, 30, Color.White, 1f, true);
 
             //Load the player resources
             Texture2D playerTexture = Content.Load<Texture2D>("Graphics\\cursor");
@@ -95,6 +116,51 @@ namespace CloudHuntGame
                 cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, (float)rnd.Next(3, 7)/2, true);
                 val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
             }
+            foreach(Entity val in menuEntities)
+            {
+                if (val.GetType() == TypeCloud.GetType())
+                {
+                    cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, (float)rnd.Next(3, 7) / 2, true);
+                    val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
+                }
+            }
+
+            //Load baloons resources
+            Texture2D baloonTexture = Content.Load<Texture2D>("Graphics\\baloon");
+            Animation redBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Red, 1f, true);
+            Animation blueBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Blue, 1f, true);
+            Animation greenBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Green, 1f, true);
+            Animation yellowBaloonAnimation = new Animation(baloonTexture, Vector2.Zero, 32, 96, 1, 30, Color.Yellow, 1f, true);
+
+            foreach(Entity val in menuEntities)
+            {
+                if (val.GetType() == TypeBaloon.GetType())
+                {
+                    switch (rnd.Next(0, 4))
+                    {
+                        case 0:
+                            val.Initialize(redBaloonAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), 1f, Baloon.BaloonColor.red);
+                            break;
+                        case 1:
+                            val.Initialize(blueBaloonAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), 1f, Baloon.BaloonColor.blue);
+                            break;
+                        case 2:
+                            val.Initialize(greenBaloonAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), 1f, Baloon.BaloonColor.green);
+                            break;
+                        case 3:
+                            val.Initialize(yellowBaloonAnimation, new Vector2(rnd.Next(0, 500), rnd.Next(0, 500)), 1f, Baloon.BaloonColor.yellow);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            /* ADDING A BALOON
+            BaloonBonus = new Baloon();
+            BaloonBonus.Initialize(//colorBaloonAnimation, new Vector2(250, 250), 1f, //Baloon.BaloonColor.color);
+            entities.Add(BaloonBonus);
+            */
 
             //Initial Game State
             gameState.Push(_gameState.Loading);
@@ -125,10 +191,12 @@ namespace CloudHuntGame
             currentKeyboardState = Keyboard.GetState();
             currentGamePadState = GamePad.GetState(PlayerIndex.One);
 
+            background.Update(gameTime);
+            panel.Update(gameTime);
             switch(gameState.Peek())
             {
                 case _gameState.Loading:
-                    if (frame > 180)
+                    if (frame > 0)
                     {
                         gameState.Pop();
                         gameState.Push(_gameState.Menu);
@@ -136,6 +204,12 @@ namespace CloudHuntGame
                     }
                     break;
                 case _gameState.Menu:
+                    icon.Update(gameTime);
+                    UpdateMenuEntities(gameTime);
+                    foreach(Entity val in menuEntities)
+                    {
+                        val.Update(gameTime);
+                    }
                     if (frame > 30)
                     {
                         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
@@ -246,20 +320,61 @@ namespace CloudHuntGame
         {
             foreach(Entity value in entities)
             {
-                if (value.Direction)
+                if (value.GetType() == TypeCloud.GetType())
                 {
-                    value.setPosition(value.Position.X + value.MoveSpeed, value.Position.Y);
-                    if (value.Position.X > 500 + value.Width)
+                    if (((Cloud)value).Direction)
                     {
-                        value.setPosition(0 - value.Width, value.Position.Y);
+                        value.setPosition(value.Position.X + value.MoveSpeed, value.Position.Y);
+                        if (value.Position.X > 500 + value.Width)
+                        {
+                            value.setPosition(0 - value.Width, value.Position.Y);
+                        }
+                    }
+                    else
+                    {
+                        value.setPosition(value.Position.X - value.MoveSpeed, value.Position.Y);
+                        if (value.Position.X < 0 - value.Width)
+                        {
+                            value.setPosition(500 + value.Width, value.Position.Y);
+                        }
                     }
                 }
-                else
+            }
+        }
+
+        /// <summary>
+        /// Update menu entities movements.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        public void UpdateMenuEntities(GameTime gameTime)
+        {
+            foreach (Entity value in menuEntities)
+            {
+                if (value.GetType() == TypeCloud.GetType())
                 {
-                    value.setPosition(value.Position.X - value.MoveSpeed, value.Position.Y);
-                    if (value.Position.X < 0 - value.Width)
+                    if (((Cloud)value).Direction)
                     {
-                        value.setPosition(500 + value.Width, value.Position.Y);
+                        value.setPosition(value.Position.X + value.MoveSpeed, value.Position.Y);
+                        if (value.Position.X > 500 + value.Width)
+                        {
+                            value.setPosition(0 - value.Width, value.Position.Y);
+                        }
+                    }
+                    else
+                    {
+                        value.setPosition(value.Position.X - value.MoveSpeed, value.Position.Y);
+                        if (value.Position.X < 0 - value.Width)
+                        {
+                            value.setPosition(500 + value.Width, value.Position.Y);
+                        }
+                    }
+                }
+                if (value.GetType() == TypeBaloon.GetType())
+                {
+                    value.setPosition(value.Position.X, value.Position.Y - value.MoveSpeed);
+                    if (value.Position.Y < 0 - value.Height)
+                    {
+                        value.setPosition(value.Position.X, 500 + value.Height);
                     }
                 }
             }
@@ -274,14 +389,22 @@ namespace CloudHuntGame
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            background.Draw(spriteBatch);
             switch(gameState.Peek())
             {
                 case _gameState.Loading:
+                    panel.Draw(spriteBatch);
                     spriteBatch.DrawString(_font, "Loading...", Vector2.Zero, Color.DarkBlue);
                     break;
                 case _gameState.Menu:
-                    spriteBatch.DrawString(_font, "Menu", Vector2.Zero, Color.DarkBlue);
+                    foreach(Entity val in menuEntities)
+                    {
+                        val.Draw(spriteBatch);
+                    }
+                    panel.Draw(spriteBatch);
+                    icon.Draw(spriteBatch);
+                    spriteBatch.DrawString(_font, "Cloud Hunt", new Vector2(150, 80), Color.DarkBlue, 0f, Vector2.Zero, 3f, SpriteEffects.None,0f);
                     break;
                 case _gameState.Playing:
                     foreach (Entity val in entities)
@@ -289,18 +412,21 @@ namespace CloudHuntGame
                         val.Draw(spriteBatch);
                     }
                     player.Draw(spriteBatch);
+                    panel.Draw(spriteBatch);
 
                     break;
                 case _gameState.Options:
-
+                    panel.Draw(spriteBatch);
                     break;
                 case _gameState.Exit:
+                    panel.Draw(spriteBatch);
                     spriteBatch.DrawString(_font, "Exit", Vector2.Zero, Color.DarkBlue);
                     break;
                 default:
                     gameState.Push(_gameState.Loading);
                     break;
             }
+
             spriteBatch.End();
 
             base.Draw(gameTime);

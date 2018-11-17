@@ -68,6 +68,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Content\Font\Consola.xnb" />
+    <None Include="Content\Graphics\baloon.xnb" />
+    <None Include="Content\Graphics\hover-button.xnb" />
+    <None Include="Content\Graphics\icon.xnb" />
+    <None Include="Content\Graphics\panel.xnb" />
+    <None Include="Content\Graphics\simple-button.xnb" />
+    <None Include="Content\Graphics\sky-background.xnb" />
+    <None Include="Content\Graphics\write-screen.xnb" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Sound\" />
