@@ -18,11 +18,16 @@ namespace CloudHuntAndroid
         SpriteBatch spriteBatch;
         SpriteFont _font;
 
+        float wantedWidth = 500;
+        float wantedHeight = 700;
+
         //Timer
         int frame;
 
         //Score
         int score = 0;
+        int lastScore = 0;
+        int bestScore = 0;
 
         public bool killBonus = false;
         public bool zoneShot = false;
@@ -35,6 +40,8 @@ namespace CloudHuntAndroid
         //Entities
         Player player;
         List<Entity> entities;
+        Texture2D cloudTexture;
+        Animation cloudAnimation;
         List<Entity> menuEntities;//Entities for menuAnimation
         Baloon BaloonBonus;
         Animation redBaloonAnimation;
@@ -57,13 +64,19 @@ namespace CloudHuntAndroid
         public CloudHunt()
         {
             graphics = new GraphicsDeviceManager(this);
+            var metric = new Android.Util.DisplayMetrics();
+            Activity.WindowManager.DefaultDisplay.GetMetrics(metric);
+
             Content.RootDirectory = "Content";
 
             graphics.IsFullScreen = true;
-            graphics.PreferredBackBufferWidth = 500;
-            graphics.PreferredBackBufferHeight = 700;
-            graphics.SupportedOrientations = DisplayOrientation.Portrait;
+            graphics.PreferredBackBufferWidth = metric.WidthPixels;
+            graphics.PreferredBackBufferHeight = (int)wantedHeight;
+            graphics.SupportedOrientations = DisplayOrientation.PortraitDown;
             graphics.ApplyChanges();
+           
+            //Virtual scale
+            virtualScale = graphics.PreferredBackBufferWidth / wantedWidth;
         }
 
         /// <summary>
@@ -90,7 +103,6 @@ namespace CloudHuntAndroid
             {
                 menuEntities.Add(new Baloon());
             }
-
             base.Initialize();
         }
 
@@ -100,9 +112,6 @@ namespace CloudHuntAndroid
         /// </summary>
         protected override void LoadContent()
         {
-            //Virtual scale
-            virtualScale = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / graphics.PreferredBackBufferWidth;
-
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             _font = Content.Load<SpriteFont>("Consola");
@@ -115,13 +124,12 @@ namespace CloudHuntAndroid
             Texture2D playerTexture = Content.Load<Texture2D>("Graphics\\cursor");
             Animation playerAnimation = new Animation(playerTexture, Vector2.Zero, 50, 50, 1, 30, Color.White, virtualScale, true);
 
-            Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,
-                GraphicsDevice.Viewport.TitleSafeArea.Y);
+            Vector2 playerPosition = new Vector2(0, 0);
             player.Initialize(playerAnimation, playerPosition);
 
             //Load the entities resources
-            Texture2D cloudTexture = Content.Load<Texture2D>("Graphics\\cloud");
-            Animation cloudAnimation;
+            cloudTexture = Content.Load<Texture2D>("Graphics\\cloud");
+            
             rnd = new Random();
 
             foreach (Entity val in entities)
@@ -190,6 +198,7 @@ namespace CloudHuntAndroid
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //virtualScale = GraphicsDevice.PresentationParameters.BackBufferWidth / graphics.PreferredBackBufferWidth;
             TouchCollection touchCollection = TouchPanel.GetState();
             background.Update(gameTime);
             switch (gameState.Peek())
@@ -237,7 +246,7 @@ namespace CloudHuntAndroid
                     }
 
                     //Baloons
-                    if (frame / 1200 == 1 && frame % 1200 == 0)
+                    if (frame / 6000 == 0 && frame % 600 == 0)
                     {
                         BaloonBonus = new Baloon();
                         switch (rnd.Next(0, 4))
@@ -259,7 +268,24 @@ namespace CloudHuntAndroid
                         }
                         entities.Add(BaloonBonus);
                     }
-                    if (frame / 1200 == 2 && frame % 1200 == 0)
+
+                    if (instaKill)
+                    {
+                        foreach (Entity value in entities)
+                        {
+                            value.getShooted(score, this);
+                        }
+                        instaKill = false;
+                    }
+
+                    if (frame / 5400 == 0 && frame % 60 == 0)
+                    {
+                        Cloud newCloud = new Cloud();
+                        cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, ((float)rnd.Next(3, 7) / 2) * virtualScale, true);
+                        newCloud.Initialize(cloudAnimation, new Vector2(0 - cloudAnimation.FrameWidth * virtualScale, rnd.Next(0, (int)(500 * virtualScale))), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
+                        entities.Add(newCloud);
+                    }
+                    if (frame / 6600 == 0 && frame % 600 == 300)
                     {
                         instaKill = false;
                         killBonus = false;
@@ -267,6 +293,28 @@ namespace CloudHuntAndroid
                     }
 
                     UpdateShoots(gameTime);
+
+                    if (frame / 6000 == 1)
+                    {
+                        gameState.Pop();
+                        frame = 0;
+                        entities.Clear();
+                        for (int i = 0; i < 20; i++)
+                        {
+                            entities.Add(new Cloud());
+                        }
+                        foreach (Entity val in entities)
+                        {
+                            cloudAnimation = new Animation(cloudTexture, Vector2.Zero, 32, 16, 1, 30, Color.White, ((float)rnd.Next(3, 7) / 2) * virtualScale, true);
+                            val.Initialize(cloudAnimation, new Vector2(rnd.Next(0, (int)(500 * virtualScale)), rnd.Next(0, (int)(500 * virtualScale))), (float)rnd.Next(5, 11), rnd.Next(0, 2) == 1);
+                        }
+                        lastScore = score;
+                        score = 0;
+                        if (lastScore > bestScore)
+                        {
+                            bestScore = lastScore;
+                        }
+                    }
 
                     //Exit
                     if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
@@ -276,7 +324,7 @@ namespace CloudHuntAndroid
                     }
                     break;
                 case _gameState.Options:
-
+                    gameState.Pop();
                     break;
                 case _gameState.Exit:
                     if (frame > 180)
@@ -427,6 +475,10 @@ namespace CloudHuntAndroid
             }
         }
 
+        /// <summary>
+        /// update shots of player
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void UpdateShoots(GameTime gameTime)
         {
             TouchCollection touchCollection = TouchPanel.GetState();
@@ -449,6 +501,17 @@ namespace CloudHuntAndroid
                     {
                         score = value.getShooted(score, this);
                     }
+                    if (zoneShot)
+                    {
+                        if (value.Position.X - (value.Width) * virtualScale < player.Position.X
+                        && player.Position.X < value.Position.X + (value.Width) * virtualScale
+                    && value.Position.Y - (value.Height) * virtualScale < player.Position.Y
+                    && player.Position.Y < value.Position.Y + (value.Height) * virtualScale
+                    && (touchCollection.Count == 0 && shot))
+                        {
+                            score = value.getShooted(score, this);
+                        }
+                    }
                 }
                 if (touchCollection.Count == 0)
                 {
@@ -466,7 +529,7 @@ namespace CloudHuntAndroid
             GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
             background.Draw(spriteBatch);
             switch (gameState.Peek())
             {
@@ -482,6 +545,14 @@ namespace CloudHuntAndroid
                     spriteBatch.Draw(panel, panelPosition, null, Color.White, (float)(Math.PI * 0.5f), new Vector2(0, 500), 1f * virtualScale, SpriteEffects.None, 0f);
                     icon.Draw(spriteBatch);
                     spriteBatch.DrawString(_font, "Cloud Hunt", new Vector2(150 * virtualScale, 80 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, 3f * virtualScale, SpriteEffects.None, 0f);
+                    if (lastScore > 0)
+                    {
+                        spriteBatch.DrawString(_font, "Last Score: " + lastScore, new Vector2(35 * virtualScale, 535 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
+                    }
+                    if (bestScore > 0)
+                    {
+                        spriteBatch.DrawString(_font, "Best Score: " + bestScore, new Vector2(35 * virtualScale, 550 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
+                    }
                     break;
                 case _gameState.Playing:
                     foreach (Entity val in entities)
@@ -490,9 +561,11 @@ namespace CloudHuntAndroid
                     }
                     player.Draw(spriteBatch);
                     spriteBatch.Draw(panel, panelPosition, null, Color.White, (float)(Math.PI * 0.5f), new Vector2(0, 500), 1f * virtualScale, SpriteEffects.None, 0f);
-                    spriteBatch.DrawString(_font, "Time : " + frame / 60, new Vector2(35 * virtualScale, 535 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(_font, "Time : " + (100 - frame / 60), new Vector2(35 * virtualScale, 535 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
                     spriteBatch.DrawString(_font, "Score: " + score, new Vector2(35 * virtualScale, 550 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
-
+                    if (zoneShot) spriteBatch.DrawString(_font, "Zone Shot Activated", new Vector2(135 * virtualScale, 535 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
+                    if (killBonus) spriteBatch.DrawString(_font, "Bonus Points Activated", new Vector2(135 * virtualScale, 550 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
+                    if (instaKill) spriteBatch.DrawString(_font, "Insta-Kill Activated", new Vector2(135 * virtualScale, 565 * virtualScale), Color.DarkBlue, 0f, Vector2.Zero, virtualScale, SpriteEffects.None, 0f);
                     break;
                 case _gameState.Options:
                     spriteBatch.Draw(panel, panelPosition, null, Color.White, (float)(Math.PI * 0.5f), new Vector2(0, 500), 1f * virtualScale, SpriteEffects.None, 0f);

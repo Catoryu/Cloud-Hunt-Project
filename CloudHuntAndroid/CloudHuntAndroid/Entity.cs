@@ -53,7 +53,6 @@ namespace Hunt
 
         public virtual int getShooted(int score, CloudHunt game)
         {
-            this.active = false;
             return score;
         }
     }
@@ -72,12 +71,20 @@ namespace Hunt
         public override int getShooted(int score, CloudHunt game)
         {
             score = base.getShooted(score, game);
-            //Augmentation de points
-            score += 5;
-            if (game.killBonus)
+            if (this.Active)
             {
-                score += 15;
+                //Augmentation de points
+                score += 5;
+                if (game.killBonus)
+                {
+                    score += 15;
+                }
+                else if (game.instaKill)
+                {
+                    score -= 1;
+                }
             }
+            this.Active = false;
             return score;
         }
     }
@@ -103,25 +110,29 @@ namespace Hunt
         public override int getShooted(int score, CloudHunt game)
         {
             score = base.getShooted(score, game);
-            switch (this.color)
+            if (this.Active)
             {
-                case BaloonColor.blue:
-                    //Gagne grande quantité de points
-                    score += 100;
-                    break;
-                case BaloonColor.green:
-                    //Prochains kills x5 points
-                    game.killBonus = true;
-                    break;
-                case BaloonColor.red:
-                    //Tir de zone
-                    game.zoneShot = true;
-                    break;
-                case BaloonColor.yellow:
-                    //Clean à points divisés par 2
-                    game.instaKill = true;
-                    break;
+                switch (this.color)
+                {
+                    case BaloonColor.blue:
+                        //Gagne grande quantité de points
+                        score += 100;
+                        break;
+                    case BaloonColor.green:
+                        //Prochains kills x5 points
+                        game.killBonus = true;
+                        break;
+                    case BaloonColor.red:
+                        //Tir de zone
+                        game.zoneShot = true;
+                        break;
+                    case BaloonColor.yellow:
+                        //Clean à points divisés par 2
+                        game.instaKill = true;
+                        break;
+                }
             }
+            this.Active = false;
             return score;
         }
     }

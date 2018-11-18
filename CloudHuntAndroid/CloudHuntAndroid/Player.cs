@@ -27,7 +27,7 @@ namespace Hunt
             this.active = true;
             this.moveSpeed = 5.0f;
             //Enable the FreeDrag gesture.
-            TouchPanel.EnabledGestures = GestureType.FreeDrag;
+            //TouchPanel.EnabledGestures = GestureType.FreeDrag;
         }
 
         public void Update(GameTime gameTime)
