@@ -121,6 +121,30 @@
 /processorParam:TextureFormat=Color
 /build:../../../images/write-screen.png;write-screen.png
 
+#begin ../../../sounds/good_bye.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../../../sounds/good_bye.wav;good_bye.wav
+
+#begin ../../../sounds/main_menu.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../../../sounds/main_menu.wav;main_menu.wav
+
+#begin ../../../sounds/music.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../../../sounds/music.wav;music.wav
+
+#begin ../../../sounds/shot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../../../sounds/shot.wav;shot.wav
+
 #begin Consola.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
