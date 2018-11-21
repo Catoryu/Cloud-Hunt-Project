@@ -78,10 +78,12 @@ namespace Hunt
                 if (game.killBonus)
                 {
                     score += 15;
+                    game.timeLimit += 2.5f;
                 }
                 else if (game.instaKill)
                 {
-                    score -= 1;
+                    score -= 3;
+                    game.timeLimit -= 0.1f;
                 }
             }
             this.Active = false;
@@ -116,7 +118,8 @@ namespace Hunt
                 {
                     case BaloonColor.blue:
                         //Gagne grande quantité de points
-                        score += 100;
+                        score += 50;
+                        game.timeLimit += 5.0f;
                         break;
                     case BaloonColor.green:
                         //Prochains kills x5 points
@@ -125,10 +128,12 @@ namespace Hunt
                     case BaloonColor.red:
                         //Tir de zone
                         game.zoneShot = true;
+                        game.timeLimit += 5.0f;
                         break;
                     case BaloonColor.yellow:
-                        //Clean à points divisés par 2
+                        //Clean à points divisés par 2.5
                         game.instaKill = true;
+                        game.timeLimit += 5.0f;
                         break;
                 }
             }
